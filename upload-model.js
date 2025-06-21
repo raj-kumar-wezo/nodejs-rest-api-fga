@@ -84,7 +84,7 @@ async function uploadModel() {
     // Upload the model
     const { authorization_model } = await fgaClient.writeAuthorizationModel(model);
     
-    console.log(`✅ Model uploaded successfully!`);
+    console.log(`Model uploaded successfully!`);
     console.log(`Model ID: ${authorization_model.id}`);
     
     // Update .env file with the new model ID
@@ -97,7 +97,7 @@ async function uploadModel() {
     );
     
     fs.writeFileSync(envPath, updatedEnvContent);
-    console.log('✅ Updated .env file with new model ID');
+    console.log('Updated .env file with new model ID');
     
     // Initialize with sample relationships
     console.log('Creating sample relationships...');
@@ -125,12 +125,12 @@ async function uploadModel() {
       }
     });
 
-    console.log('✅ Sample relationships created');
-    console.log('\n🎯 Your OpenFGA is now ready! Restart your server:');
+    console.log('Sample relationships created');
+    console.log('\nYour OpenFGA is now ready! Restart your server:');
     console.log('   npm start');
 
   } catch (error) {
-    console.error('❌ Failed to upload model:', error.message);
+    console.error('Failed to upload model:', error.message);
   }
 }
 

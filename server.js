@@ -108,7 +108,13 @@ const initializeApp = async () => {
       // NOTE: Model and relationships should be managed via dashboard or a dedicated script.
       // The lines below are commented out to prevent re-uploading on every server start.
       // await loadAuthorizationModel();
-      await initializeFGA();
+      try {
+        await initializeFGA();
+      } catch (fgaError) {
+        console.log('OpenFGA initialization failed, continuing with fallback authorization:', fgaError.message);
+        console.log('   - Admin user has full access');
+        console.log('   - Users can access their own records');
+      }
     } else {
       console.log('OpenFGA not configured, using fallback authorization rules');
       console.log('   - Admin user has full access');
@@ -118,9 +124,9 @@ const initializeApp = async () => {
     // Start server
     app.listen(PORT, () => {
       console.log(`\nServer is running on port ${PORT}`);
-      console.log(`📡 API Base URL: http://localhost:${PORT}`);
-      console.log(`🔗 Health Check: http://localhost:${PORT}/health`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/`);
+      console.log(` API Base URL: http://localhost:${PORT}`);
+      console.log(` Health Check: http://localhost:${PORT}/health`);
+      console.log(` API Documentation: http://localhost:${PORT}/`);
       console.log('\nReady to handle requests!');
       
       if (!fgaAvailable) {

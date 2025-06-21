@@ -41,12 +41,24 @@ const initializeDatabase = async () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `;
     
     await connection.execute(createUsersTable);
-        console.log('Users table created/verified successfully');
+    console.log('Users table created/verified successfully');
+    
+    // Check if updated_at column exists, if not add it
+    try {
+      await connection.execute('SELECT updated_at FROM users LIMIT 1');
+    } catch (error) {
+      if (error.code === 'ER_BAD_FIELD_ERROR') {
+        console.log('Adding updated_at column to existing table...');
+        await connection.execute('ALTER TABLE users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        console.log('updated_at column added successfully');
+      }
+    }
     
     connection.release();
   } catch (error) {

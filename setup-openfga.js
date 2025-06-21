@@ -78,8 +78,8 @@ async function setupOpenFGA() {
   fs.writeFileSync(envPath, updatedEnvContent);
   console.log('.env file updated successfully\n');
 
-  console.log('✅ Development setup completed!');
-  console.log('\n📋 Next Steps:');
+  console.log('Development setup completed!');
+  console.log('\nNext Steps:');
   console.log('1. Your API will run with fallback authorization (no OpenFGA)');
   console.log('2. To use real OpenFGA, you have these options:');
   console.log('\n   Option A: OpenFGA Cloud (Recommended for assessment)');
@@ -91,7 +91,7 @@ async function setupOpenFGA() {
   console.log('   - Install Docker Desktop');
   console.log('   - Run: docker run -p 8080:8080 openfga/openfga run');
   console.log('   - Then run this setup script again');
-  console.log('\n🎯 You can now start your Node.js application with:');
+    console.log('\nYou can now start your Node.js application with:');
   console.log('   npm start');
   console.log('\nYour API will work with fallback authorization rules!');
 }

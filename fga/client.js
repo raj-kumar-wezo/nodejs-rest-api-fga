@@ -158,11 +158,15 @@ const initializeFGA = async () => {
       }
     ];
 
-    await fgaClient.write({
-      writes: relationships
-    });
-
-    console.log('OpenFGA initialized with sample relationships');
+    // Use the safe writing utility
+    const result = await writeTuplesSafely(relationships);
+    console.log(`OpenFGA initialization completed: ${result.success} created, ${result.skipped} already existed, ${result.failed} failed`);
+    
+    if (result.success > 0) {
+      console.log('OpenFGA initialized with sample relationships');
+    } else if (result.skipped > 0) {
+      console.log('OpenFGA relationships already exist, initialization skipped');
+    }
   } catch (error) {
     console.error('Failed to initialize OpenFGA:', error.message);
   }
@@ -183,6 +187,53 @@ const testConnection = async () => {
     console.error('OpenFGA connection failed:', error.message);
     return false;
   }
+};
+
+// Check if a tuple exists
+const checkTupleExists = async (user, relation, object) => {
+  if (!fgaClient) return false;
+  
+  try {
+    const { allowed } = await fgaClient.check({
+      user,
+      relation,
+      object
+    });
+    return allowed;
+  } catch (error) {
+    console.error('Failed to check tuple existence:', error.message);
+    return false;
+  }
+};
+
+// Write tuples safely (skip if they already exist)
+const writeTuplesSafely = async (tuples) => {
+  if (!fgaClient) {
+    console.log('OpenFGA client not available, skipping tuple writes');
+    return { success: 0, skipped: 0, failed: 0 };
+  }
+
+  let successCount = 0;
+  let skippedCount = 0;
+  let failedCount = 0;
+
+  for (const tuple of tuples) {
+    try {
+      await fgaClient.write({
+        writes: [tuple]
+      });
+      successCount++;
+    } catch (error) {
+      if (error.message && error.message.includes('already exists')) {
+        skippedCount++;
+      } else {
+        console.error(`Failed to write tuple ${JSON.stringify(tuple)}:`, error.message);
+        failedCount++;
+      }
+    }
+  }
+
+  return { success: successCount, skipped: skippedCount, failed: failedCount };
 };
 
 // Get or create client instance
@@ -211,5 +262,7 @@ module.exports = {
   fgaClient: () => getFgaClient(),
   loadAuthorizationModel,
   initializeFGA,
-  testConnection
+  testConnection,
+  checkTupleExists,
+  writeTuplesSafely
 }; 

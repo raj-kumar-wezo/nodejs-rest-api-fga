@@ -1,4 +1,4 @@
-const { getFgaClient } = require('./client');
+const { getFgaClient, writeTuplesSafely } = require('./client');
 
 // Authorization service with OpenFGA integration
 class AuthorizationService {
@@ -151,11 +151,12 @@ class AuthorizationService {
         { user: `user:admin`, relation: 'can_delete', object: `user:${userId}` },
       ];
 
-      await fgaClient.write({
-        writes: relationships
-      });
-
-      console.log(`Created OpenFGA relationships for user ${userId}`);
+      const result = await writeTuplesSafely(relationships);
+      console.log(`User ${userId} relationships: ${result.success} created, ${result.skipped} already existed, ${result.failed} failed`);
+      
+      if (result.success > 0) {
+        console.log(`Created OpenFGA relationships for user ${userId}`);
+      }
     } catch (error) {
       console.error('Failed to create OpenFGA relationships:', error.message);
     }
@@ -192,4 +193,4 @@ class AuthorizationService {
   }
 }
 
-module.exports = AuthorizationService; 
+module.exports = AuthorizationService;  

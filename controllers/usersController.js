@@ -28,7 +28,7 @@ const updateUserSchema = Joi.object({
 // Get all users
 const getAllUsers = async (req, res) => {
   try {
-    const requestingUser = req.header('X-User-ID');
+    const requestingUser = req.user;
     const isAllowed = await AuthorizationService.canReadAllUsers(requestingUser);
 
     if (!isAllowed) {
@@ -60,7 +60,7 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const requestingUser = req.header('X-User-ID');
+    const requestingUser = req.user;
     const isAllowed = await AuthorizationService.canReadUser(id, requestingUser);
 
     if (!isAllowed) {
@@ -98,8 +98,8 @@ const getUserById = async (req, res) => {
 // Create new user
 const createUser = async (req, res) => {
   try {
-    // Get the requesting user's ID from the header
-    const requestingUser = req.header('X-User-ID');
+    // Get the requesting user's ID from the middleware
+    const requestingUser = req.user;
 
     // **Authorization Check**
     const isAllowed = await AuthorizationService.canCreateUsers(requestingUser);
@@ -164,7 +164,7 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const requestingUser = req.header('X-User-ID');
+    const requestingUser = req.user;
     const isAllowed = await AuthorizationService.canWriteUser(id, requestingUser);
 
     if (!isAllowed) {
@@ -182,7 +182,7 @@ const updateUser = async (req, res) => {
         success: false,
         error: 'Validation Error',
         message: error.details[0].message
-      });
+      });       
     }
 
     // Check if user exists
@@ -263,7 +263,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const requestingUser = req.header('X-User-ID');
+    const requestingUser = req.user;
     const isAllowed = await AuthorizationService.canDeleteUser(id, requestingUser);
 
     if (!isAllowed) {

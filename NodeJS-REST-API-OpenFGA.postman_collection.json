@@ -1,0 +1,724 @@
+{
+	"info": {
+		"_postman_id": "nodejs-rest-api-fga-collection",
+		"name": "NodeJS REST API with OpenFGA",
+		"description": "Complete REST API collection for Node.js application with OpenFGA authorization. Includes all CRUD operations for users with proper authorization headers.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "nodejs-rest-api-fga"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the API server is running and healthy"
+			},
+			"response": []
+		},
+		{
+			"name": "API Documentation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Get API documentation and available endpoints"
+			},
+			"response": []
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text",
+								"description": "Admin user ID for authorization"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Get all users (requires admin privileges)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users (User 1) - Should Fail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "1",
+								"type": "text",
+								"description": "Regular user ID - should not have access to all users"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Attempt to get all users as regular user (should return 403 Forbidden)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text",
+								"description": "Admin user ID for authorization"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Get user with ID 1 (admin can access any user)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID (Self)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "1",
+								"type": "text",
+								"description": "User ID 1 accessing their own data"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Get user with ID 1 (user accessing their own data)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID (Unauthorized)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "2",
+								"type": "text",
+								"description": "User ID 2 trying to access user 1's data"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "User 2 trying to access user 1's data (should return 403 Forbidden)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text",
+								"description": "Admin user ID for authorization"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Create a new user (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Regular User) - Should Fail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "1",
+								"type": "text",
+								"description": "Regular user ID - should not have permission to create users"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Attempt to create a user as regular user (should return 403 Forbidden)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text",
+								"description": "Admin user ID for authorization"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Update user with ID 1 (admin can update any user)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User (Self)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "1",
+								"type": "text",
+								"description": "User ID 1 updating their own data"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"My Updated Name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Update user with ID 1 (user updating their own data)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User (Unauthorized)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "2",
+								"type": "text",
+								"description": "User ID 2 trying to update user 1's data"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Hacked Name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "User 2 trying to update user 1's data (should return 403 Forbidden)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text",
+								"description": "Admin user ID for authorization"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						},
+						"description": "Delete user with ID 2 (admin can delete any user)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Self)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "1",
+								"type": "text",
+								"description": "User ID 1 deleting their own account"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Delete user with ID 1 (user deleting their own account)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User (Unauthorized)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "2",
+								"type": "text",
+								"description": "User ID 2 trying to delete user 1's account"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "User 2 trying to delete user 1's account (should return 403 Forbidden)"
+					},
+					"response": []
+				}
+			],
+			"description": "All user-related operations with proper authorization testing"
+		},
+		{
+			"name": "Error Testing",
+			"item": [
+				{
+					"name": "Get Non-existent User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"999"
+							]
+						},
+						"description": "Try to get a user that doesn't exist (should return 404)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User with Invalid Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Invalid User\",\n  \"email\": \"invalid-email\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Create user with invalid email format (should return 400)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User with Duplicate Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"john.doe@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Create user with email that already exists (should return 409)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User with Empty Body",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-User-ID",
+								"value": "admin",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Update user with empty body (should return 400)"
+					},
+					"response": []
+				}
+			],
+			"description": "Test various error scenarios and edge cases"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Log request details for debugging",
+					"console.log('Request:', pm.request.method, pm.request.url);",
+					"console.log('Headers:', pm.request.headers.toObject());",
+					"if (pm.request.body && pm.request.body.mode === 'raw') {",
+					"    console.log('Body:', pm.request.body.raw);",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Test response status",
+					"pm.test('Status code is valid', function () {",
+					"    pm.response.to.have.status(200, 201, 400, 403, 404, 409, 500);",
+					"});",
+					"",
+					"// Test response time",
+					"pm.test('Response time is less than 2000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+					"});",
+					"",
+					"// Test response format",
+					"pm.test('Response has valid JSON format', function () {",
+					"    pm.response.to.be.json;",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('Response Status:', pm.response.status);",
+					"console.log('Response Body:', pm.response.text());",
+					"",
+					"// Test specific scenarios based on request",
+					"if (pm.request.url.path.includes('/users') && pm.request.method === 'GET') {",
+					"    if (pm.request.url.path.includes('/api/users') && !pm.request.url.path.includes('/')) {",
+					"        // Get all users",
+					"        pm.test('Get all users response structure', function () {",
+					"            const response = pm.response.json();",
+					"            pm.expect(response).to.have.property('success');",
+					"            pm.expect(response).to.have.property('data');",
+					"            pm.expect(response).to.have.property('count');",
+					"        });",
+					"    } else if (pm.request.url.path.includes('/api/users/')) {",
+					"        // Get specific user",
+					"        pm.test('Get user response structure', function () {",
+					"            const response = pm.response.json();",
+					"            pm.expect(response).to.have.property('success');",
+					"            if (response.success) {",
+					"                pm.expect(response).to.have.property('data');",
+					"            }",
+					"        });",
+					"    }",
+					"}",
+					"",
+					"if (pm.request.method === 'POST' && pm.request.url.path.includes('/api/users')) {",
+					"    pm.test('Create user response structure', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('success');",
+					"        if (response.success) {",
+					"            pm.expect(response).to.have.property('message');",
+					"            pm.expect(response).to.have.property('data');",
+					"        }",
+					"    });",
+					"}",
+					"",
+					"if (pm.request.method === 'PUT' && pm.request.url.path.includes('/api/users/')) {",
+					"    pm.test('Update user response structure', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('success');",
+					"        if (response.success) {",
+					"            pm.expect(response).to.have.property('message');",
+					"            pm.expect(response).to.have.property('data');",
+					"        }",
+					"    });",
+					"}",
+					"",
+					"if (pm.request.method === 'DELETE' && pm.request.url.path.includes('/api/users/')) {",
+					"    pm.test('Delete user response structure', function () {",
+					"        const response = pm.response.json();",
+					"        pm.expect(response).to.have.property('success');",
+					"        if (response.success) {",
+					"            pm.expect(response).to.have.property('message');",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "Base URL for the API server"
+		}
+	]
+} 
