@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.1",
+  "type_definitions": [
+    {
+      "type": "user",
+      "relations": {
+        "owner": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "admin": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "can_read": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "can_write": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "can_delete": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "users_collection",
+      "relations": {
+        "admin": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "can_read_all": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        },
+        "can_create": {
+          "union": {
+            "child": [
+              {
+                "this": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+} 

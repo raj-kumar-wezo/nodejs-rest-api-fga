@@ -1,0 +1,14 @@
+model
+  schema 1.1
+
+type user
+  relations
+    define owner: [user]
+    define can_read: [user]
+    define can_write: [user]
+    define can_delete: [user]
+
+type users_collection
+  relations
+    define can_read_all: [user]
+    define can_create: [user] 
